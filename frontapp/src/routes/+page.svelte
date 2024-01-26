@@ -1,13 +1,3 @@
-<script>
-    $effect(() => {
-        window.$('body').append('박지원')
-        window.$('body').click(() => {
-            window.$('body').append('바보')
-        });
-    });
-
-</script>
-
 <svelte:head>
     <title>Home</title>
     <meta name="description" content="홈 화면"/>
