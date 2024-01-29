@@ -1,44 +1,46 @@
 <script lang="ts">
-	import { setContext } from "svelte";
+	import 'toastr/build/toastr.css'
+	import toastr from 'toastr';
+	import createClient from 'openapi-fetch';
+	import type { paths } from '$lib/types/api/v1/schema';
 
-    function submitLoginForm(this: HTMLFormElement) {
-        const form: HTMLFormElement = this;
-        form.username.value = form.username.value.trim();
-        if (form.username.value.length === 0) {
-            alert('Username is required');
-            form.username.focus();
-            return;
-        }
-        form.password.value = form.password.value.trim();
-        if (form.password.value.length === 0) {
-            alert('Password is required');
-            form.password.focus();
-            return;
-        }
-        fetch('http://localhost:8090/api/v1/members/login', {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json'
+	const { POST } = createClient<paths>({ baseUrl: 'http://localhost:8090' });
 
-            },
-            body: JSON.stringify({
-                username: form.username.value,
-                password: form.password.value
-            })
-        })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-            })
-            .catch(error => {
-                console.error(error);
-            });
-    }
+	function submitLoginForm(this: HTMLFormElement) {
+		const form: HTMLFormElement = this;
+		form.username.value = form.username.value.trim();
+		if (form.username.value.length === 0) {
+			alert('Username is required');
+			form.username.focus();
+			return;
+		}
+		form.password.value = form.password.value.trim();
+		if (form.password.value.length === 0) {
+			alert('Password is required');
+			form.password.focus();
+			return;
+		}
+
+		POST('/api/v1/members/login', {
+			credentials: 'include',
+			body: {
+				username: form.username.value,
+				password: form.password.value
+			}
+		})
+        .then(response => {
+			const data = response.data;
+			const error = response.error;
+
+			if ( data?.msg ) {
+                toastr.info(data?.msg);
+            }
+		});
+	}
 </script>
 
 <form on:submit|preventDefault={submitLoginForm}>
-    <input type="text" name="username" placeholder="Username" />
-    <input type="password" name="password" placeholder="Password" />
-    <button type="submit">Login</button>
+	<input type="text" name="username" placeholder="Username" />
+	<input type="password" name="password" placeholder="Password" />
+	<button type="submit">Login</button>
 </form>

@@ -1,23 +1,32 @@
-<script>
-    let posts = $state([]);
+<script lang="ts">
+    import createClient from "openapi-fetch";
+    import type {components, paths} from "$lib/types/api/v1/schema";
+    
+    const { GET } = createClient<paths>({ baseUrl: "http://localhost:8090" });
+    
+        let posts: components["schemas"]["PostDto"][] = $state([]);
+
+
     $effect(() => {
-        fetch('http://localhost:8090/api/v1/posts/mine', {
-            credentials: "include"
+        GET("/api/v1/posts/mine", {
+            credentials: 'include'
+        }).then(response => {
+            posts = response.data?.data?.items ?? [];
         })
-            .then(response => response.json())
-            .then(rs => posts = rs.data.items);
-    });
+    }); 
+       
+
 </script>
 
 <div>
-    <h1>Posts</h1>
+	<h1>Posts</h1>
 
-    <hr>
-    <ul>
-        {#each posts as post}
-            <li>
-                <a href="/post/{post.id}">{post.id}. {post.title}</a>
-            </li>
-        {/each}
-    </ul>
+	<hr />
+	<ul>
+		{#each posts as post}
+			<li>
+                <a href="/post/{post.id}">{post.createDate}. {post.title}</a>
+			</li>
+		{/each}
+	</ul>
 </div>
