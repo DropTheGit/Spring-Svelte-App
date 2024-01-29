@@ -36,6 +36,9 @@ public class MemberService {
                 .password(passwordEncoder.encode(password))
                 .build();
 
+        String refreshToken = authTokenService.genRefreshToken(member);
+        member.setRefreshToken(refreshToken);
+
         memberRepository.save(member);
 
         return RsData.of("200-1", "회원가입 성공", member);
@@ -60,6 +63,7 @@ public class MemberService {
                 authorities.stream().map(SimpleGrantedAuthority::new).toList()
         );
     }
+
 
     @AllArgsConstructor
     @Getter
@@ -86,5 +90,19 @@ public class MemberService {
                 "로그인 성공",
                 new AuthAndMakeTokensResponseBody(member, accessToken, refreshToken)
         );
+
+    }
+
+    public boolean validateToken(String token) {
+        return authTokenService.validateToken(token);
+    }
+
+
+    public RsData<String> refreshAccessToken(String refreshToken) {
+        Member member = memberRepository.findByRefreshToken(refreshToken).orElseThrow(() -> new GlobalException("400-1", "존재하지 않는 리프레시 토큰입니다."));
+
+        String accessToken = authTokenService.genAccessToken(member);
+
+        return RsData.of("200-1", "토큰 갱신 성공", accessToken);
     }
 }

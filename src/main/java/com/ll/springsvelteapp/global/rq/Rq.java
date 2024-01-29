@@ -111,7 +111,7 @@ public class Rq {
 
         if (member == null) {
 
-            member = entityManager.find(Member.class, getUser().getId());
+            member = entityManager.getReference(Member.class, getUser().getId());
         }
 
         return member;
@@ -138,4 +138,6 @@ public class Rq {
         SecurityContextHolder.getContext().setAuthentication(securityUser.genAuthentication());
 
     }
+
+
 }
