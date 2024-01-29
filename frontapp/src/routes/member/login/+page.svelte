@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { setContext } from "svelte";
+
     function submitLoginForm(this: HTMLFormElement) {
         const form: HTMLFormElement = this;
         form.username.value = form.username.value.trim();

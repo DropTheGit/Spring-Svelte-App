@@ -139,5 +139,7 @@ public class Rq {
 
     }
 
-
+    public String getHeader(String name) {
+        return req.getHeader(name);
+    }
 }
